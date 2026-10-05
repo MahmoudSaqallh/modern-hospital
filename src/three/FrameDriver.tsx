@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { homeVisualsActive, SCENE_READY_EVENT, sceneStore } from "./sceneStore";
+import { storyVisualsActive, SCENE_READY_EVENT, sceneStore } from "./sceneStore";
 
 const AMBIENT_INTERVAL_MS = 1000 / 30;
 
@@ -31,7 +31,7 @@ export function FrameDriver() {
       }
       if (sceneStore.reducedMotion || sceneStore.mode === "quiet") return;
 
-      if (homeVisualsActive() || now - last >= AMBIENT_INTERVAL_MS) {
+      if (storyVisualsActive() || now - last >= AMBIENT_INTERVAL_MS) {
         last = now;
         invalidate();
       }

@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { ContactSection } from "@/features/contact/ContactSection";
+import { ComplaintCallout } from "@/features/complaints/components/ComplaintCallout";
 import { FaqSection } from "@/components/sections/FaqSection";
-import { HoursAndNotices } from "@/components/sections/HoursAndNotices";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/contact">): Promise<Metadata> {
   const { lang } = await params;
@@ -13,6 +13,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/contact">)
   return { title: dict.nav.contact, description: dict.contact.description };
 }
 
+/** Direct contact first, then a clear separate route to complaints, then answers. */
 export default async function ContactPage({ params }: PageProps<"/[lang]/contact">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
@@ -23,8 +24,14 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/contact
       <div className="pt-[calc(76px+1rem)] lg:pt-[88px]">
         <ContactSection locale={lang} dict={dict} headingLevel="h1" />
       </div>
-      <HoursAndNotices locale={lang} dict={dict} />
-      <FaqSection index="03" />
+      <ComplaintCallout
+        locale={lang}
+        title={dict.contact.complaintsTitle}
+        text={dict.contact.complaintsText}
+        cta={dict.contact.complaintsCta}
+        className="pb-20"
+      />
+      <FaqSection index="02" />
     </>
   );
 }

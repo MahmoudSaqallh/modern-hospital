@@ -7,7 +7,7 @@ export type ClinicSession = "morning" | "evening";
 
 export interface Doctor {
   id: string;
-  departmentId: string;
+  clinicId: string;
   name: LocalizedText;
   /** e.g. "استشاري طب الأطفال" */
   title: LocalizedText;

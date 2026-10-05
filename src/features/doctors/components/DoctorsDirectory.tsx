@@ -3,7 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useId, useState } from "react";
 import { Search, X } from "lucide-react";
-import { bookableDepartments, getDepartment } from "@/data/departments";
+import { bookableClinics, getClinic } from "@/data/clinics";
 import { doctors } from "@/data/doctors";
 import { useI18n } from "@/i18n/I18nProvider";
 import { plural } from "@/i18n/plural";
@@ -24,39 +24,41 @@ export function DoctorsDirectory() {
   const searchId = useId();
   const [query, setQuery] = useState("");
 
-  const requested = params.get("department");
-  const department = getDepartment(requested)?.id ?? null;
+  // `department` is the pre-rename parameter name; still honoured for old links.
+  const requested = params.get("clinic") ?? params.get("department");
+  const clinicFilter = getClinic(requested)?.id ?? null;
 
-  const setDepartment = (id: string | null) => {
+  const setClinicFilter = (id: string | null) => {
     const next = new URLSearchParams(params);
-    if (id) next.set("department", id);
-    else next.delete("department");
+    next.delete("department");
+    if (id) next.set("clinic", id);
+    else next.delete("clinic");
     const qs = next.toString();
     router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
   };
 
   const results = doctors.filter((doctor) => {
-    if (department && doctor.departmentId !== department) return false;
-    const dept = getDepartment(doctor.departmentId);
+    if (clinicFilter && doctor.clinicId !== clinicFilter) return false;
+    const clinic = getClinic(doctor.clinicId);
     return matchesQuery(
       query,
       doctor.name.ar,
       doctor.name.en,
       doctor.title.ar,
       doctor.title.en,
-      dept?.name.ar ?? "",
-      dept?.name.en ?? "",
+      clinic?.name.ar ?? "",
+      clinic?.name.en ?? "",
     );
   });
 
   const filterButton = (id: string | null, label: string) => {
-    const active = department === id;
+    const active = clinicFilter === id;
     return (
       <button
         key={id ?? "all"}
         type="button"
         aria-pressed={active}
-        onClick={() => setDepartment(id)}
+        onClick={() => setClinicFilter(id)}
         className={cn(
           "min-h-10 shrink-0 border px-4 text-[0.875rem] transition-colors duration-200",
           active ? "border-ink bg-ink text-white" : "border-line-strong bg-white text-ink-2 hover:border-ink/40 hover:text-ink",
@@ -92,7 +94,7 @@ export function DoctorsDirectory() {
                 className="absolute end-1.5 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full text-muted hover:bg-mist"
               >
                 <X aria-hidden strokeWidth={1.5} className="size-4" />
-                <span className="visually-hidden">{dict.booking.department.clearSearch}</span>
+                <span className="visually-hidden">{dict.booking.clinic.clearSearch}</span>
               </button>
             )}
           </div>
@@ -107,7 +109,7 @@ export function DoctorsDirectory() {
             className="-mx-5 mt-2 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:thin] sm:mx-0 sm:flex-wrap sm:px-0"
           >
             {filterButton(null, copy.all)}
-            {bookableDepartments.map((d) => filterButton(d.id, d.name[locale]))}
+            {bookableClinics.map((d) => filterButton(d.id, d.name[locale]))}
           </div>
         </div>
       </div>
@@ -132,7 +134,7 @@ export function DoctorsDirectory() {
             className="mt-6"
             onClick={() => {
               setQuery("");
-              setDepartment(null);
+              setClinicFilter(null);
             }}
           >
             {copy.reset}

@@ -1,7 +1,7 @@
 "use client";
 
 import { CalendarDays, Clock3, Stethoscope, UserRound, type LucideIcon } from "lucide-react";
-import { getDepartment } from "@/data/departments";
+import { getClinic } from "@/data/clinics";
 import { getDoctor } from "@/data/doctors";
 import { useI18n } from "@/i18n/I18nProvider";
 import { formatDate, formatTime } from "@/lib/dates";
@@ -12,7 +12,7 @@ import { ANY_DOCTOR } from "../types";
 function useSummaryRows(state: BookingState) {
   const { locale, dict } = useI18n();
   const copy = dict.booking;
-  const department = getDepartment(state.departmentId);
+  const clinic = getClinic(state.clinicId);
   const doctor = getDoctor(state.assignedDoctorId ?? (state.doctorChoice !== ANY_DOCTOR ? state.doctorChoice : null));
   const doctorLabel = doctor
     ? doctor.name[locale]
@@ -21,7 +21,7 @@ function useSummaryRows(state: BookingState) {
       : null;
 
   const rows: Array<{ key: string; icon: LucideIcon; label: string; value: string | null }> = [
-    { key: "department", icon: Stethoscope, label: copy.review.department, value: department?.name[locale] ?? null },
+    { key: "clinic", icon: Stethoscope, label: copy.review.clinic, value: clinic?.name[locale] ?? null },
     { key: "doctor", icon: UserRound, label: copy.review.doctor, value: doctorLabel },
     {
       key: "date",

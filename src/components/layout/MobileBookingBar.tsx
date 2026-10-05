@@ -10,7 +10,7 @@ import { organization, telHref } from "@/config/organization";
 import { buttonClasses, ForwardArrow } from "@/components/ui/Button";
 
 /** Routes that already carry their own booking action. */
-const HIDDEN_ON = [/^\/(ar|en)\/booking/, /^\/(ar|en)\/doctors\/[^/]+/];
+const HIDDEN_ON = [/^\/(ar|en)\/booking/, /^\/(ar|en)\/doctors\/[^/]+/, /^\/(ar|en)\/complaints/];
 
 /**
  * Sticky booking action for small screens. Appears after the first screen

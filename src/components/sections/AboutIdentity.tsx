@@ -64,7 +64,7 @@ export function AboutIdentity() {
     <section ref={section} aria-labelledby="about-title" className="relative py-28 lg:py-40">
       <div className="container-site grid items-center gap-16 lg:grid-cols-12">
         <div className="lg:col-span-6">
-          <SectionHeader id="about-title" index="05" eyebrow={copy.eyebrow} title={copy.title} description={copy.text} />
+          <SectionHeader id="about-title" index="07" eyebrow={copy.eyebrow} title={copy.title} description={copy.text} />
           <blockquote data-reveal className="mt-10 border-s-2 border-medical ps-6">
             <p className="font-display text-[1.25rem] leading-relaxed text-ink">{copy.mission}</p>
           </blockquote>

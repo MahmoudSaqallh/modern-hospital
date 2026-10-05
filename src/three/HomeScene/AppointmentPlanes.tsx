@@ -41,7 +41,8 @@ export function AppointmentPlanes({ copy }: { copy: PlaneCopy }) {
     const delta = Math.min(rawDelta, 0.05);
     const reduced = sceneStore.reducedMotion;
     const anchor = sceneStore.anchors["booking-stage"];
-    const target = sceneStore.mode === "home" ? anchor.weight : 0;
+    // Anchors only exist on pages that show this visual, so the weight alone decides presence.
+    const target = anchor.weight;
     presence.current = reduced ? target : THREE.MathUtils.damp(presence.current, target, 4, delta);
     const p = presence.current;
     g.visible = p > 0.02 && Boolean(textures);

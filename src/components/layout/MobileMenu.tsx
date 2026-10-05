@@ -10,7 +10,7 @@ import { localePath } from "@/i18n/config";
 import { useI18n } from "@/i18n/I18nProvider";
 import { organization, telHref } from "@/config/organization";
 import { cn } from "@/lib/localized";
-import { NAV_ITEMS, isActivePath } from "@/components/navigation/navItems";
+import { NAV_ITEMS, SECONDARY_NAV, isActivePath } from "@/components/navigation/navItems";
 import { LanguageSwitch } from "@/components/navigation/LanguageSwitch";
 import { ArcMark } from "@/components/ui/ArcMark";
 import { buttonClasses, ForwardArrow } from "@/components/ui/Button";
@@ -110,23 +110,57 @@ export const MobileMenu = forwardRef<MobileMenuHandle, { returnFocusTo: RefObjec
             <ul>
               {NAV_ITEMS.map((item, i) => {
                 const active = isActivePath(pathname, locale, item.path);
+                // Children beyond the parent itself (e.g. Complaints under Contact) are listed indented.
+                const extra = item.children?.filter((child) => child.path !== item.path) ?? [];
                 return (
                   <li key={item.key} data-menu-item className="border-b border-line">
                     <Link
                       href={localePath(locale, item.path)}
                       aria-current={active ? "page" : undefined}
                       onClick={close}
-                      className="group/btn flex min-h-16 items-center gap-4 py-3"
+                      className="group/btn flex min-h-14 items-center gap-4 py-2.5"
                     >
                       <span className="font-mono text-xs text-muted tabular">{String(i + 1).padStart(2, "0")}</span>
-                      <span className={cn("font-display text-[1.35rem]", active ? "text-care-deep" : "text-ink")}>
+                      <span className={cn("font-display text-[1.25rem]", active ? "text-care-deep" : "text-ink")}>
                         {dict.nav[item.key]}
                       </span>
                       {active && <span aria-hidden className="ms-auto size-1.5 rounded-full bg-care-deep" />}
                     </Link>
+                    {extra.length > 0 && (
+                      <ul className="mb-2 ms-9 border-s border-line ps-4">
+                        {extra.map((child) => {
+                          const childActive = isActivePath(pathname, locale, child.path);
+                          return (
+                            <li key={child.key}>
+                              <Link
+                                href={localePath(locale, child.path)}
+                                aria-current={childActive ? "page" : undefined}
+                                onClick={close}
+                                className={cn("flex min-h-11 items-center text-[1rem]", childActive ? "text-care-deep" : "text-ink-2")}
+                              >
+                                {dict.nav[child.key]}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                   </li>
                 );
               })}
+            </ul>
+            <ul data-menu-item className="mt-4 flex flex-wrap gap-x-6">
+              {SECONDARY_NAV.map((item) => (
+                <li key={item.key}>
+                  <Link
+                    href={localePath(locale, item.path)}
+                    onClick={close}
+                    className="inline-flex min-h-11 items-center text-[0.9375rem] text-ink-2 underline decoration-line-strong underline-offset-4"
+                  >
+                    {dict.nav[item.key]}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
 

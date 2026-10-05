@@ -1,7 +1,7 @@
 "use client";
 
 import { LoaderCircle } from "lucide-react";
-import { getDepartment } from "@/data/departments";
+import { getClinic } from "@/data/clinics";
 import { getDoctor } from "@/data/doctors";
 import { useI18n } from "@/i18n/I18nProvider";
 import { formatDate, formatTime } from "@/lib/dates";
@@ -14,7 +14,7 @@ import { normalizePhone } from "../validation/patient";
 import { StepActions, StepHeading } from "./StepHeading";
 
 export function StepReview({
-  departmentId,
+  clinicId,
   doctorId,
   date,
   time,
@@ -24,7 +24,7 @@ export function StepReview({
   onConfirm,
   onRecover,
 }: {
-  departmentId: string;
+  clinicId: string;
   doctorId: string;
   date: IsoDate;
   time: ClockTime;
@@ -37,13 +37,13 @@ export function StepReview({
 }) {
   const { locale, dict } = useI18n();
   const copy = dict.booking.review;
-  const department = getDepartment(departmentId);
+  const clinic = getClinic(clinicId);
   const doctor = getDoctor(doctorId);
   const submitting = submission.status === "submitting";
   const error = submission.status === "error" ? copy.errors[submission.code] : null;
 
   const rows: Array<{ label: string; value: React.ReactNode; step: BookingStep }> = [
-    { label: copy.department, value: department?.name[locale], step: 1 },
+    { label: copy.clinic, value: clinic?.name[locale], step: 1 },
     { label: copy.doctor, value: doctor ? `${doctor.name[locale]} — ${doctor.title[locale]}` : null, step: 2 },
     { label: copy.date, value: formatDate(date, locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" }), step: 3 },
     { label: copy.time, value: <span className="tabular">{formatTime(time, locale)}</span>, step: 3 },

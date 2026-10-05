@@ -13,7 +13,7 @@ import type { AppointmentSlot, DoctorChoice, IsoDate, PatientDetails } from "../
 import { BookingProgress } from "./BookingProgress";
 import { BookingSuccess } from "./BookingSuccess";
 import { BookingSummary, BookingSummaryInline } from "./BookingSummary";
-import { StepDepartment } from "./StepDepartment";
+import { StepClinic } from "./StepClinic";
 import { StepDetails } from "./StepDetails";
 import { StepDoctor } from "./StepDoctor";
 import { StepReview } from "./StepReview";
@@ -107,23 +107,23 @@ export function BookingFlow() {
       <div className="mt-10 grid gap-12 lg:grid-cols-12 lg:gap-14">
         <div ref={panel} className="min-w-0 lg:col-span-8">
           {state.step === 1 && (
-            <StepDepartment
-              selectedId={state.departmentId}
-              onSelect={(departmentId) => dispatch({ type: "selectDepartment", departmentId })}
+            <StepClinic
+              selectedId={state.clinicId}
+              onSelect={(clinicId) => dispatch({ type: "selectClinic", clinicId })}
             />
           )}
-          {state.step === 2 && state.departmentId && (
+          {state.step === 2 && state.clinicId && (
             <StepDoctor
-              departmentId={state.departmentId}
+              clinicId={state.clinicId}
               selected={state.doctorChoice}
               now={now}
               onSelect={(choice: DoctorChoice) => dispatch({ type: "selectDoctor", choice })}
               onBack={() => goTo(1)}
             />
           )}
-          {state.step === 3 && state.departmentId && state.doctorChoice && (
+          {state.step === 3 && state.clinicId && state.doctorChoice && (
             <StepSchedule
-              departmentId={state.departmentId}
+              clinicId={state.clinicId}
               doctorChoice={state.doctorChoice}
               date={state.date}
               time={state.time}
@@ -144,9 +144,9 @@ export function BookingFlow() {
               onBack={() => goTo(3)}
             />
           )}
-          {state.step === 5 && state.departmentId && state.assignedDoctorId && state.date && state.time && (
+          {state.step === 5 && state.clinicId && state.assignedDoctorId && state.date && state.time && (
             <StepReview
-              departmentId={state.departmentId}
+              clinicId={state.clinicId}
               doctorId={state.assignedDoctorId}
               date={state.date}
               time={state.time}

@@ -54,7 +54,7 @@ export const organization = {
     {
       days: [5],
       label: { ar: "الجمعة", en: "Friday" },
-      hours: { ar: "حسب القسم", en: "Varies by department" },
+      hours: { ar: "حسب العيادة", en: "Varies by clinic" },
       note: {
         ar: "تواصل مع القسم لمعرفة مواعيد يوم الجمعة.",
         en: "Contact the department for Friday hours.",

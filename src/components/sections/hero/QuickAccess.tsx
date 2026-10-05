@@ -8,13 +8,13 @@ import { cn } from "@/lib/localized";
 import { setFocusJourney } from "@/three/sceneStore";
 import { ForwardArrow } from "@/components/ui/Button";
 
-type QuickKey = "book" | "doctor" | "departments" | "contact";
+type QuickKey = "book" | "doctor" | "clinics" | "contact";
 
 /** Each action names the journey node it relates to, so the 3D node can respond. */
 const ITEMS: ReadonlyArray<{ key: QuickKey; path: string; icon: LucideIcon; node: number }> = [
   { key: "book", path: "/booking", icon: CalendarPlus, node: 3 },
   { key: "doctor", path: "/doctors", icon: UserRoundSearch, node: 2 },
-  { key: "departments", path: "/departments", icon: Stethoscope, node: 1 },
+  { key: "clinics", path: "/clinics", icon: Stethoscope, node: 1 },
   { key: "contact", path: "/contact", icon: Phone, node: 4 },
 ];
 

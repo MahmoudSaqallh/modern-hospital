@@ -1,11 +1,45 @@
 import type { SVGProps } from "react";
-import { Ambulance, Baby, Bone, HeartPulse, Microscope, ScanLine, Stethoscope, type LucideIcon } from "lucide-react";
-import type { DepartmentIconName } from "@/features/departments/types";
+import {
+  Ambulance,
+  Baby,
+  Bone,
+  Ear,
+  HandHelping,
+  HeartPulse,
+  Microscope,
+  PersonStanding,
+  Pill,
+  Salad,
+  ScanLine,
+  ShieldPlus,
+  Stethoscope,
+  type LucideIcon,
+} from "lucide-react";
 
 /**
- * Department icons — lucide where a precise medical glyph exists, plus three
- * custom drawings on the same 24px grid / 1.5 stroke so the set stays uniform.
+ * One icon language for clinics and departments — lucide where a precise
+ * medical glyph exists, plus custom drawings on the same 24px grid /
+ * 1.5 stroke so the set stays uniform.
  */
+
+export type MedicalIconName =
+  | "maternity"
+  | "pediatrics"
+  | "internal"
+  | "surgery"
+  | "cardiology"
+  | "orthopedics"
+  | "dental"
+  | "dermatology"
+  | "ent"
+  | "emergency"
+  | "radiology"
+  | "laboratory"
+  | "pharmacy"
+  | "sterilization"
+  | "physiotherapy"
+  | "nutrition"
+  | "support";
 
 type IconProps = SVGProps<SVGSVGElement> & { size?: number; strokeWidth?: number };
 
@@ -58,35 +92,68 @@ function MaternityIcon(props: IconProps) {
   );
 }
 
-const lucideMap: Partial<Record<DepartmentIconName, LucideIcon>> = {
+/** Skin cross-section: surface wave over layered tissue. */
+function SkinIcon(props: IconProps) {
+  return (
+    <CustomIcon {...props}>
+      <path d="M3 8.5c1.5-1.4 3-1.4 4.5 0s3 1.4 4.5 0 3-1.4 4.5 0 3 1.4 4.5 0" />
+      <path d="M3 13h18" />
+      <path d="M3 17.5h18" />
+      <path d="M8 8.8V13" />
+      <path d="M15.5 8.8V13" />
+      <path d="M11.7 13v4.5" />
+    </CustomIcon>
+  );
+}
+
+/** Sterilization: shield with steam lines. */
+function SterilizationIcon(props: IconProps) {
+  return (
+    <CustomIcon {...props}>
+      <path d="M12 21s-7-3.2-7-9.2V6l7-2.5L19 6v5.8C19 17.8 12 21 12 21Z" />
+      <path d="M9.5 9.5c.8.8.8 1.7 0 2.5s-.8 1.7 0 2.5" />
+      <path d="M12 8.5c.8.8.8 1.7 0 2.5s-.8 1.7 0 2.5s.8 1.7 0 2.5" />
+      <path d="M14.5 9.5c.8.8.8 1.7 0 2.5s-.8 1.7 0 2.5" />
+    </CustomIcon>
+  );
+}
+
+const lucideMap: Partial<Record<MedicalIconName, LucideIcon>> = {
   pediatrics: Baby,
   internal: Stethoscope,
   cardiology: HeartPulse,
   orthopedics: Bone,
+  ent: Ear,
+  emergency: Ambulance,
   radiology: ScanLine,
   laboratory: Microscope,
-  emergency: Ambulance,
+  pharmacy: Pill,
+  physiotherapy: PersonStanding,
+  nutrition: Salad,
+  support: HandHelping,
 };
 
-const customMap: Partial<Record<DepartmentIconName, (props: IconProps) => React.JSX.Element>> = {
+const customMap: Partial<Record<MedicalIconName, (props: IconProps) => React.JSX.Element>> = {
   dental: ToothIcon,
   surgery: ScalpelIcon,
   maternity: MaternityIcon,
+  dermatology: SkinIcon,
+  sterilization: SterilizationIcon,
 };
 
-export function DepartmentIcon({
+export function MedicalIcon({
   name,
   size = 24,
   strokeWidth = 1.5,
   className,
 }: {
-  name: DepartmentIconName;
+  name: MedicalIconName;
   size?: number;
   strokeWidth?: number;
   className?: string;
 }) {
   const Custom = customMap[name];
   if (Custom) return <Custom size={size} strokeWidth={strokeWidth} className={className} />;
-  const Lucide = lucideMap[name] ?? Stethoscope;
+  const Lucide = lucideMap[name] ?? ShieldPlus;
   return <Lucide size={size} strokeWidth={strokeWidth} className={className} aria-hidden />;
 }

@@ -3,8 +3,15 @@ import Link from "next/link";
 import { organization } from "@/config/organization";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/ar";
-import { bookableDepartments } from "@/data/departments";
-import { NAV_ITEMS } from "@/components/navigation/navItems";
+import { bookableClinics } from "@/data/clinics";
+import { bookingHref } from "@/features/booking/links";
+import { NAV_ITEMS, SECONDARY_NAV } from "@/components/navigation/navItems";
+
+/** Every destination once: top-level items, their sub-pages, then secondary pages. */
+const footerLinks = [
+  ...NAV_ITEMS.flatMap((item) => [item, ...(item.children?.filter((child) => child.path !== item.path) ?? [])]),
+  ...SECONDARY_NAV,
+];
 
 /** Three-colour rule echoing the emblem ring: green · red · ink(white on dark). */
 function EmblemRule() {
@@ -38,11 +45,11 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
           <p className="mt-6 max-w-[34ch] text-[0.9375rem] leading-7">{dict.footer.tagline}</p>
         </div>
 
-        <nav aria-label={dict.a11y.footerNav} className="md:col-span-3 lg:col-span-2">
+        <nav aria-label={dict.a11y.footerNav} className="md:col-span-4 lg:col-span-3">
           <h2 className="text-[0.8125rem] font-medium text-white">{dict.footer.navTitle}</h2>
-          <ul className="mt-4 space-y-1">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.key}>
+          <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1">
+            {footerLinks.map((item) => (
+              <li key={item.path}>
                 <Link
                   href={localePath(locale, item.path)}
                   className="inline-block py-1.5 text-[0.9375rem] transition-colors hover:text-white"
@@ -54,16 +61,16 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
           </ul>
         </nav>
 
-        <div className="md:col-span-4 lg:col-span-3">
+        <div className="md:col-span-3 lg:col-span-2">
           <h2 className="text-[0.8125rem] font-medium text-white">{dict.footer.bookingTitle}</h2>
           <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1 md:grid-cols-1">
-            {bookableDepartments.slice(0, 6).map((department) => (
-              <li key={department.id}>
+            {bookableClinics.slice(0, 6).map((clinic) => (
+              <li key={clinic.id}>
                 <Link
-                  href={`${localePath(locale, "/booking")}?department=${department.id}`}
+                  href={bookingHref(locale, { clinic: clinic.id })}
                   className="inline-block py-1.5 text-[0.9375rem] transition-colors hover:text-white"
                 >
-                  {department.name[locale]}
+                  {clinic.name[locale]}
                 </Link>
               </li>
             ))}

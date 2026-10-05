@@ -4,6 +4,7 @@ import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/ar";
 import { cn } from "@/lib/localized";
 import { Reveal } from "@/components/motion/Reveal";
+import { SceneAnchor } from "@/components/motion/SceneAnchor";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ForwardArrow } from "@/components/ui/Button";
 import { MagneticLink } from "@/components/ui/MagneticLink";
@@ -98,7 +99,10 @@ export function ContactSection({
           <SectionHeader id="contact-title" index={index} eyebrow={copy.eyebrow} title={copy.title} description={copy.description} />
         )}
 
-        <div className="mt-14 grid gap-12 lg:grid-cols-12 lg:gap-14">
+        {/* Contact page only: a band where the WebGL "communication line" flows, clear of any text. */}
+        {headingLevel === "h1" && <SceneAnchor anchor="contact-strip" className="mt-6 h-16" />}
+
+        <div className={cn("grid gap-12 lg:grid-cols-12 lg:gap-14", headingLevel === "h1" ? "mt-6" : "mt-14")}>
           <div className="lg:col-span-7">
             <ul className="border-t border-ink/15">
               {actions.map((item) => {

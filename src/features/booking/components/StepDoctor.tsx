@@ -1,8 +1,8 @@
 "use client";
 
 import { Check, UsersRound } from "lucide-react";
-import { getDepartment } from "@/data/departments";
-import { getDoctorsByDepartment } from "@/data/doctors";
+import { getClinic } from "@/data/clinics";
+import { getDoctorsByClinic } from "@/data/doctors";
 import { DoctorNextSlot } from "@/features/doctors/components/DoctorNextSlot";
 import { useI18n } from "@/i18n/I18nProvider";
 import { cn, format } from "@/lib/localized";
@@ -21,13 +21,13 @@ function SelectedMark() {
 }
 
 export function StepDoctor({
-  departmentId,
+  clinicId,
   selected,
   now,
   onSelect,
   onBack,
 }: {
-  departmentId: string;
+  clinicId: string;
   selected: DoctorChoice | null;
   now: Date | null;
   onSelect: (choice: DoctorChoice) => void;
@@ -35,8 +35,8 @@ export function StepDoctor({
 }) {
   const { locale, dict } = useI18n();
   const copy = dict.booking.doctor;
-  const department = getDepartment(departmentId);
-  const doctors = getDoctorsByDepartment(departmentId);
+  const clinic = getClinic(clinicId);
+  const doctors = getDoctorsByClinic(clinicId);
 
   const optionClass = (isSelected: boolean) =>
     cn(
@@ -55,7 +55,7 @@ export function StepDoctor({
       <StepHeading
         index={2}
         title={copy.title}
-        description={department ? format(copy.description, { department: department.name[locale] }) : undefined}
+        description={clinic ? format(copy.description, { clinic: clinic.name[locale] }) : undefined}
       />
 
       {doctors.length === 0 ? (
@@ -64,7 +64,7 @@ export function StepDoctor({
             {copy.noneHint}
           </Notice>
           <Button variant="secondary" className="mt-6" onClick={onBack}>
-            {copy.changeDepartment}
+            {copy.changeClinic}
           </Button>
         </div>
       ) : (

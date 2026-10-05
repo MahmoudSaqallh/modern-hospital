@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Doctor } from "@/features/doctors/types";
-import { getDepartment } from "@/data/departments";
+import { getClinic } from "@/data/clinics";
 import { bookingHref } from "@/features/booking/links";
 import { localePath } from "@/i18n/config";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -30,7 +30,7 @@ export function DoctorRow({
   onActivate?: () => void;
 }) {
   const { locale, dict } = useI18n();
-  const department = getDepartment(doctor.departmentId);
+  const department = getClinic(doctor.clinicId);
   const profile = localePath(locale, `/doctors/${doctor.id}`);
 
   return (
@@ -74,7 +74,7 @@ export function DoctorRow({
       <DoctorNextSlot doctor={doctor} now={now} className="col-span-1 md:col-span-1" />
 
       <Link
-        href={bookingHref(locale, { department: doctor.departmentId, doctor: doctor.id })}
+        href={bookingHref(locale, { clinic: doctor.clinicId, doctor: doctor.id })}
         aria-label={`${dict.common.bookAppointment} — ${doctor.name[locale]}`}
         className={buttonClasses({
           variant: active ? "primary" : "secondary",

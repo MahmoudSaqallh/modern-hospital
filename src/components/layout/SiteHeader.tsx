@@ -4,19 +4,32 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
-import { Menu } from "lucide-react";
+import { FolderKanban, HandHeart, Menu, MessageSquareText, Phone, type LucideIcon } from "lucide-react";
 import { gsap, useGSAP } from "@/animations/gsap";
 import { prefersReducedMotion } from "@/animations/motion";
 import { localePath } from "@/i18n/config";
 import { useI18n } from "@/i18n/I18nProvider";
 import { organization } from "@/config/organization";
 import { cn } from "@/lib/localized";
-import { NAV_ITEMS, isActivePath } from "@/components/navigation/navItems";
+import { NAV_ITEMS, isActiveItem, isActivePath, type NavKey } from "@/components/navigation/navItems";
+import { NavDropdown } from "@/components/navigation/NavDropdown";
 import { LanguageSwitch } from "@/components/navigation/LanguageSwitch";
 import { MagneticLink } from "@/components/ui/MagneticLink";
 import { MobileMenu, type MobileMenuHandle } from "./MobileMenu";
 
 const COMPACT_AFTER = 24;
+
+const DROPDOWN_ICONS: Partial<Record<NavKey, LucideIcon>> = {
+  contact: Phone,
+  complaints: MessageSquareText,
+  projects: FolderKanban,
+  patientSupport: HandHeart,
+};
+
+function DropdownIcon({ navKey }: { navKey: NavKey }) {
+  const Icon = DROPDOWN_ICONS[navKey];
+  return Icon ? <Icon aria-hidden strokeWidth={1.5} className="size-4 text-muted" /> : null;
+}
 
 export function SiteHeader() {
   const { locale, dict } = useI18n();
@@ -67,15 +80,20 @@ export function SiteHeader() {
     const bar = indicator.current;
     const ul = list.current;
     if (!bar || !ul) return;
-    const link = target ?? ul.querySelector<HTMLElement>("[aria-current='page']");
+    const link = target ?? ul.querySelector<HTMLElement>("[data-nav-active='true']");
     if (!link) {
       gsap.to(bar, { autoAlpha: 0, duration: 0.2 });
       return;
     }
-    const inset = 12;
+    // Measure against the nav itself (dropdown items are positioned, so offsetLeft would lie).
+    const nav = bar.parentElement;
+    if (!nav) return;
+    const inset = 10;
+    const linkRect = link.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
     gsap.to(bar, {
-      x: link.offsetLeft + inset,
-      width: Math.max(link.offsetWidth - inset * 2, 8),
+      x: linkRect.left - navRect.left + inset,
+      width: Math.max(linkRect.width - inset * 2, 8),
       autoAlpha: 1,
       duration: instant || prefersReducedMotion() ? 0 : 0.45,
       ease: "power3.out",
@@ -120,19 +138,41 @@ export function SiteHeader() {
         <nav aria-label={dict.a11y.mainNav} className="relative ms-auto hidden xl:block">
           <ul ref={list} className="relative flex items-center" onMouseLeave={() => moveIndicator()}>
             {NAV_ITEMS.map((item) => {
-              const active = isActivePath(pathname, locale, item.path);
+              const active = isActiveItem(pathname, locale, item);
+              const linkClassName = cn(
+                "relative block px-2.5 py-2.5 text-[0.9375rem] transition-colors duration-200",
+                active ? "text-ink" : "text-ink-2/80 hover:text-ink",
+              );
+              if (item.children) {
+                return (
+                  <NavDropdown
+                    key={item.key}
+                    label={dict.nav[item.key]}
+                    href={localePath(locale, item.path)}
+                    menuLabel={dict.nav[item.menuLabel ?? "contactMenu"]}
+                    active={active}
+                    linkClassName={linkClassName}
+                    onLinkHover={(el) => moveIndicator(el)}
+                    onLinkFocus={(el) => moveIndicator(el)}
+                    links={item.children.map((child) => ({
+                      href: localePath(locale, child.path),
+                      label: dict.nav[child.key],
+                      active: isActivePath(pathname, locale, child.path),
+                      icon: <DropdownIcon navKey={child.key} />,
+                    }))}
+                  />
+                );
+              }
               return (
                 <li key={item.key}>
                   <Link
                     href={localePath(locale, item.path)}
-                    aria-current={active ? "page" : undefined}
+                    aria-current={isActivePath(pathname, locale, item.path) ? "page" : undefined}
+                    data-nav-active={active ? "true" : undefined}
                     onMouseEnter={(e) => moveIndicator(e.currentTarget)}
                     onFocus={(e) => moveIndicator(e.currentTarget)}
                     onBlur={() => moveIndicator()}
-                    className={cn(
-                      "relative block px-3 py-2.5 text-[0.9375rem] transition-colors duration-200",
-                      active ? "text-ink" : "text-ink-2/80 hover:text-ink",
-                    )}
+                    className={linkClassName}
                   >
                     {dict.nav[item.key]}
                   </Link>

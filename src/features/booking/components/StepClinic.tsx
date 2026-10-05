@@ -3,29 +3,29 @@
 import Link from "next/link";
 import { useId, useState } from "react";
 import { Check, Search, X } from "lucide-react";
-import { bookableDepartments } from "@/data/departments";
-import { getDoctorsByDepartment } from "@/data/doctors";
+import { bookableClinics } from "@/data/clinics";
+import { getDoctorsByClinic } from "@/data/doctors";
 import { localePath } from "@/i18n/config";
 import { useI18n } from "@/i18n/I18nProvider";
 import { plural } from "@/i18n/plural";
 import { cn } from "@/lib/localized";
 import { matchesQuery } from "@/lib/search";
-import { DepartmentIcon } from "@/components/icons/DepartmentIcon";
+import { MedicalIcon } from "@/components/icons/MedicalIcon";
 import { Notice } from "@/components/ui/Notice";
 import { StepHeading } from "./StepHeading";
 
-export function StepDepartment({
+export function StepClinic({
   selectedId,
   onSelect,
 }: {
   selectedId: string | null;
-  onSelect: (departmentId: string) => void;
+  onSelect: (clinicId: string) => void;
 }) {
   const { locale, dict } = useI18n();
-  const copy = dict.booking.department;
+  const copy = dict.booking.clinic;
   const [query, setQuery] = useState("");
   const searchId = useId();
-  const results = bookableDepartments.filter((d) =>
+  const results = bookableClinics.filter((d) =>
     matchesQuery(query, d.name.ar, d.name.en, d.summary.ar, d.summary.en),
   );
 
@@ -67,15 +67,15 @@ export function StepDepartment({
 
       {results.length > 0 ? (
         <ul data-step-item className="mt-6 grid border-s border-t border-line sm:grid-cols-2 xl:grid-cols-3">
-          {results.map((department) => {
-            const selected = department.id === selectedId;
-            const count = getDoctorsByDepartment(department.id).length;
+          {results.map((clinic) => {
+            const selected = clinic.id === selectedId;
+            const count = getDoctorsByClinic(clinic.id).length;
             return (
-              <li key={department.id} className="border-b border-e border-line">
+              <li key={clinic.id} className="border-b border-e border-line">
                 <button
                   type="button"
                   aria-pressed={selected}
-                  onClick={() => onSelect(department.id)}
+                  onClick={() => onSelect(clinic.id)}
                   className={cn(
                     "group relative flex h-full w-full items-start gap-4 p-5 text-start transition-colors duration-200",
                     selected ? "bg-care-tint/60" : "hover:bg-white",
@@ -88,14 +88,14 @@ export function StepDepartment({
                       selected ? "bg-care-deep" : "bg-transparent group-hover:bg-line-strong",
                     )}
                   />
-                  <DepartmentIcon
-                    name={department.icon}
+                  <MedicalIcon
+                    name={clinic.icon}
                     size={24}
                     className="mt-0.5 shrink-0 text-care-deep transition-transform duration-300 group-hover:-translate-y-0.5"
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block font-medium text-ink">{department.name[locale]}</span>
-                    <span className="mt-0.5 block text-meta">{department.summary[locale]}</span>
+                    <span className="block font-medium text-ink">{clinic.name[locale]}</span>
+                    <span className="mt-0.5 block text-meta">{clinic.summary[locale]}</span>
                     <span className="mt-2 block text-[0.75rem] text-muted tabular">
                       {plural(dict.common.doctorsCount, count, locale)}
                     </span>

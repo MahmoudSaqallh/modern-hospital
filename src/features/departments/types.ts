@@ -1,30 +1,24 @@
+import type { MedicalIconName } from "@/components/icons/MedicalIcon";
 import type { LocalizedText } from "@/lib/localized";
 
-export type DepartmentIconName =
-  | "maternity"
-  | "pediatrics"
-  | "internal"
-  | "surgery"
-  | "cardiology"
-  | "orthopedics"
-  | "radiology"
-  | "laboratory"
-  | "dental"
-  | "emergency";
+/**
+ * Therapeutic departments treat patients directly; supporting departments
+ * enable diagnosis, treatment and operations behind the scenes.
+ */
+export type DepartmentCategory = "therapeutic" | "supporting";
 
+/**
+ * A hospital department — an organizational unit, not something patients
+ * book directly (patients book clinics: see features/clinics).
+ */
 export interface Department {
   id: string;
-  icon: DepartmentIconName;
+  category: DepartmentCategory;
+  icon: MedicalIconName;
   name: LocalizedText;
-  /** One-line descriptor used on tiles and booking options. */
-  summary: LocalizedText;
-  /** Longer copy for the departments page. */
-  description: LocalizedText;
-  /**
-   * Whether patients can book a scheduled appointment online.
-   * Urgent-care departments are informational only.
-   */
-  bookable: boolean;
-  /** Urgent context — rendered with the red accent. */
-  urgent?: boolean;
+  /** What the department does, in one or two sentences. */
+  role: LocalizedText;
+  services: LocalizedText[];
+  /** Outpatient clinics this department runs or works with. */
+  clinicIds: string[];
 }

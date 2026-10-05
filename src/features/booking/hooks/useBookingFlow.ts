@@ -5,15 +5,15 @@ import { useCallback, useEffect, useReducer, useRef } from "react";
 import { BookingApiError, isAbortError, submitBooking } from "../services/bookingApi";
 import type { PatientBooking } from "../types";
 import { normalizeName, normalizePhone, parseAge, sanitizeNotes } from "../validation/patient";
-import { bookingReducer, createInitialState, type BookingState } from "./bookingState";
+import { bookingReducer, createInitialState, prefillFromSearch, type BookingState } from "./bookingState";
 
 function toPayload(state: BookingState): PatientBooking | null {
-  const { departmentId, assignedDoctorId, date, time, patient } = state;
+  const { clinicId, assignedDoctorId, date, time, patient } = state;
   const age = parseAge(patient.age);
-  if (!departmentId || !assignedDoctorId || !date || !time || age === null) return null;
+  if (!clinicId || !assignedDoctorId || !date || !time || age === null) return null;
   const notes = sanitizeNotes(patient.notes);
   return {
-    departmentId,
+    clinicId,
     doctorId: assignedDoctorId,
     date,
     time,
@@ -34,15 +34,7 @@ export function useBookingFlow() {
   const params = useSearchParams();
   const [state, dispatch] = useReducer(bookingReducer, params, (search) =>
     // Time-independent prefill here; past slots are cleared after mount (see below).
-    createInitialState(
-      {
-        department: search.get("department"),
-        doctor: search.get("doctor"),
-        date: search.get("date"),
-        time: search.get("time"),
-      },
-      null,
-    ),
+    createInitialState(prefillFromSearch(search), null),
   );
 
   // A prefilled time that has already passed (e.g. an old link) sends the patient back to choose again.

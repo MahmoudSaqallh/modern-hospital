@@ -37,7 +37,7 @@ function ScheduleSkeleton({ label }: { label: string }) {
 }
 
 export function StepSchedule({
-  departmentId,
+  clinicId,
   doctorChoice,
   date,
   time,
@@ -49,7 +49,7 @@ export function StepSchedule({
   onContinue,
   onBack,
 }: {
-  departmentId: string;
+  clinicId: string;
   doctorChoice: DoctorChoice;
   date: IsoDate | null;
   time: ClockTime | null;
@@ -63,7 +63,7 @@ export function StepSchedule({
 }) {
   const { locale, dict } = useI18n();
   const copy = dict.booking.schedule;
-  const { state, retry } = useAvailability(departmentId, doctorChoice, now);
+  const { state, retry } = useAvailability(clinicId, doctorChoice, now);
   const days = useMemo(() => (state.status === "success" ? state.days : []), [state]);
   const firstAvailable = days.find(dayHasAvailability);
   const selectedDay = days.find((d) => d.date === date);

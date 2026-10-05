@@ -78,17 +78,22 @@ export function Hero() {
 
       <div className="container-site flex flex-1 flex-col">
         <div className="flex flex-1 items-center pb-10 pt-[37svh] lg:pb-14 lg:pt-6">
-          <div data-hero-copy className="w-full max-w-[36rem] lg:w-[46%] lg:max-w-[40rem]">
+          <div data-hero-copy className="w-full max-w-[38rem] lg:w-[50%] lg:max-w-[42rem]">
             <p data-intro="label" className="inline-flex items-center gap-2.5 text-[0.9375rem] text-ink-2">
               <StatusDot status="available" />
               {hero.label}
             </p>
 
-            <h1 id="hero-title" className="text-hero mt-5 text-ink lg:mt-7">
+            {/* The organization's name is the headline — sized so each line stays whole on desktop. */}
+            <h1
+              id="hero-title"
+              className="mt-5 font-display text-[clamp(2.2rem,1.25rem+3.1vw,4rem)] font-medium leading-[1.3] text-ink lg:mt-7 ltr:leading-[1.08] ltr:tracking-[-0.02em]"
+            >
               <span data-intro="line" className="block py-[0.04em]">
                 {hero.titleLine1}
               </span>
-              <span data-intro="line" className="block py-[0.04em] text-care-deep">
+              {/* Second line one step smaller: the society's name leads, its hospital group follows. */}
+              <span data-intro="line" className="block py-[0.04em] text-[0.78em] text-care-deep">
                 {hero.titleLine2}
                 <span aria-hidden className="ms-[0.1em] inline-block size-[0.14em] rounded-full bg-medical align-baseline" />
               </span>
@@ -97,7 +102,7 @@ export function Hero() {
             <p data-intro="copy" className="mt-6 font-display text-[clamp(1.15rem,1rem+0.5vw,1.45rem)] leading-relaxed text-ink-2">
               {hero.secondLine}
             </p>
-            <p data-intro="copy" className="text-lead mt-3 max-w-[42ch] text-muted">
+            <p data-intro="copy" className="text-lead mt-3 max-w-[52ch] text-muted">
               {hero.description}
             </p>
 

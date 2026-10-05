@@ -6,9 +6,9 @@ import { Component, useEffect, useMemo, useState, type ReactNode } from "react";
 import { isLocale } from "@/i18n/config";
 import { useI18n } from "@/i18n/I18nProvider";
 import { MEDIA } from "@/animations/motion";
-import { bookableDepartments } from "@/data/departments";
+import { bookableClinics } from "@/data/clinics";
 import { getDoctor } from "@/data/doctors";
-import { applyScenePreset } from "./envPresets";
+import { applyScenePreset, type ScenePreset } from "./envPresets";
 import { detectQuality, supportsWebGL, type SceneQuality } from "./quality";
 import { requestSceneFrames, sceneStore, setSceneMode, type SceneMode } from "./sceneStore";
 import type { JourneyCopy } from "./HeroScene/CareCore";
@@ -27,12 +27,30 @@ class SceneErrorBoundary extends Component<{ children: ReactNode }, { failed: bo
   }
 }
 
-function modeForPath(pathname: string): SceneMode {
+/** First path segment after the locale ("" for the home page). */
+function sectionOf(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean);
   const rest = segments.length && isLocale(segments[0]) ? segments.slice(1) : segments;
-  if (rest.length === 0) return "home";
-  if (rest[0] === "booking") return "quiet";
-  return "ambient";
+  return rest[0] ?? "";
+}
+
+/** Task pages (booking, complaints) keep the scene nearly still — the form comes first. */
+const QUIET_SECTIONS = new Set(["booking", "complaints"]);
+
+const PAGE_PRESETS: Record<string, ScenePreset> = {
+  clinics: "clinics",
+  departments: "departments",
+  doctors: "doctors",
+  news: "news",
+  projects: "projects",
+  about: "about",
+  contact: "contact",
+  "patient-support": "support",
+};
+
+function modeForSection(section: string): SceneMode {
+  if (section === "") return "home";
+  return QUIET_SECTIONS.has(section) ? "quiet" : "ambient";
 }
 
 /**
@@ -64,7 +82,7 @@ export function SceneCanvas() {
     return {
       rtl: dir === "rtl",
       specialtyTitle: steps[0].title,
-      specialties: bookableDepartments.slice(0, 4).map((d) => d.name[locale]),
+      specialties: bookableClinics.slice(0, 4).map((d) => d.name[locale]),
       doctorTitle: steps[1].title,
       doctorName: sample?.name[locale] ?? "",
       doctorRole: dict.bookingPreview.plane.doctorRole,
@@ -88,14 +106,16 @@ export function SceneCanvas() {
   }, []);
 
   useEffect(() => {
-    const mode = modeForPath(pathname);
+    const section = sectionOf(pathname);
+    const mode = modeForSection(section);
     setSceneMode(mode);
     sceneStore.dir = document.documentElement.dir === "rtl" ? -1 : 1;
+    sceneStore.focusJourney = -1;
+    sceneStore.focusClinic = -1;
+    sceneStore.focusNetwork = null;
     if (mode !== "home") {
       sceneStore.heroProgress = 1;
-      sceneStore.focusJourney = -1;
-      sceneStore.focusDept = -1;
-      applyScenePreset(mode === "quiet" ? "quiet" : "ambient");
+      applyScenePreset(mode === "quiet" ? "quiet" : (PAGE_PRESETS[section] ?? "ambient"));
     }
     requestSceneFrames();
   }, [pathname]);

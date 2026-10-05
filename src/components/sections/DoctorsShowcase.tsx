@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { getDepartment } from "@/data/departments";
+import { getClinic } from "@/data/clinics";
 import { getDoctor } from "@/data/doctors";
 import { gsap, useGSAP } from "@/animations/gsap";
 import { MEDIA } from "@/animations/motion";
@@ -89,7 +89,7 @@ export function DoctorsShowcase() {
       <div className="container-site">
         <SectionHeader
           id="doctors-title"
-          index="02"
+          index="03"
           eyebrow={copy.eyebrow}
           title={copy.title}
           description={copy.description}
@@ -101,7 +101,7 @@ export function DoctorsShowcase() {
           className="-mx-5 mt-14 grid snap-x snap-mandatory auto-cols-[78%] grid-flow-col gap-5 overflow-x-auto px-5 pb-4 sm:auto-cols-[44%] lg:mx-0 lg:grid-flow-row lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {featured.map((doctor) => {
-            const department = getDepartment(doctor.departmentId);
+            const department = getClinic(doctor.clinicId);
             const profile = localePath(locale, `/doctors/${doctor.id}`);
             return (
               <li key={doctor.id} data-doctor className="group snap-start">
@@ -129,7 +129,7 @@ export function DoctorsShowcase() {
                   <div data-doctor-meta className="mt-4 flex items-end justify-between gap-3 border-t border-line pt-4">
                     <DoctorNextSlot doctor={doctor} now={now} />
                     <Link
-                      href={bookingHref(locale, { department: doctor.departmentId, doctor: doctor.id })}
+                      href={bookingHref(locale, { clinic: doctor.clinicId, doctor: doctor.id })}
                       aria-label={`${dict.common.bookAppointment} — ${doctor.name[locale]}`}
                       className="group/btn inline-flex min-h-10 shrink-0 items-center gap-1.5 text-[0.875rem] font-medium text-care-deep"
                     >

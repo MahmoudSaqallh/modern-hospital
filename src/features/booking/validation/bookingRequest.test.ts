@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { bookingRequestSchema, checkBookingRules } from "./bookingRequest";
 
 const valid = {
-  departmentId: "pediatrics",
+  clinicId: "pediatrics",
   doctorId: "ahmad-mohammad",
   date: "2026-10-10",
   time: "09:30",
@@ -34,7 +34,7 @@ describe("booking request (server-side rules)", () => {
   });
 
   it("rejects non-bookable departments and out-of-range dates", () => {
-    expect(checkBookingRules(bookingRequestSchema.parse({ ...valid, departmentId: "emergency" }), "2026-10-04").ok).toBe(false);
+    expect(checkBookingRules(bookingRequestSchema.parse({ ...valid, clinicId: "emergency" }), "2026-10-04").ok).toBe(false);
     expect(checkBookingRules(bookingRequestSchema.parse({ ...valid, date: "2026-09-01" }), "2026-10-04").ok).toBe(false);
     expect(checkBookingRules(bookingRequestSchema.parse({ ...valid, date: "2027-01-01" }), "2026-10-04").ok).toBe(false);
   });

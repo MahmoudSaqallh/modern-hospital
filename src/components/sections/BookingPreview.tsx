@@ -131,7 +131,7 @@ export function BookingPreview() {
           onFocusCapture={() => setHovering(true)}
           onBlurCapture={() => setHovering(false)}
         >
-          <SectionHeader id="preview-title" index="03" eyebrow={copy.eyebrow} title={copy.title} description={copy.description} />
+          <SectionHeader id="preview-title" index="04" eyebrow={copy.eyebrow} title={copy.title} description={copy.description} />
 
           <div className="relative mt-10" data-reveal>
             <div role="tablist" aria-label={copy.stepsLabel} aria-orientation="vertical" onKeyDown={onTabKey} className="relative">

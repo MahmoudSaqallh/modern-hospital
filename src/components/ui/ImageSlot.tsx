@@ -13,6 +13,7 @@ export function ImageSlot({
   src,
   alt = "",
   className,
+  captionClassName,
   priority = false,
   sizes = "(min-width: 1024px) 50vw, 100vw",
 }: {
@@ -21,6 +22,8 @@ export function ImageSlot({
   src?: string;
   alt?: string;
   className?: string;
+  /** Lets oversized (parallax) frames pull the caption back into view. */
+  captionClassName?: string;
   priority?: boolean;
   sizes?: string;
 }) {
@@ -43,7 +46,9 @@ export function ImageSlot({
               />
             ))}
           </svg>
-          <figcaption className="absolute bottom-0 start-0 flex items-center gap-2 bg-paper/85 px-3 py-2 text-meta">
+          <figcaption
+            className={cn("absolute bottom-0 start-0 flex items-center gap-2 bg-paper/85 px-3 py-2 text-meta", captionClassName)}
+          >
             <ImageIcon aria-hidden strokeWidth={1.5} className="size-3.5" />
             <span>
               {slotLabel} — {caption}

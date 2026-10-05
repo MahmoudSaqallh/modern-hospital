@@ -11,7 +11,9 @@ import { GridLayer } from "./BackgroundScene/GridLayer";
 import { CareCore, type JourneyCopy } from "./HeroScene/CareCore";
 import { AppointmentPlanes } from "./HomeScene/AppointmentPlanes";
 import { ContactLine } from "./HomeScene/ContactLine";
-import { DepartmentLattice } from "./HomeScene/DepartmentLattice";
+import { ClinicLattice } from "./HomeScene/ClinicLattice";
+import { DepartmentNetwork } from "./HomeScene/DepartmentNetwork";
+import { SupportFlow } from "./SupportScene/SupportFlow";
 import { FrameDriver, SceneReadySignal } from "./FrameDriver";
 import { sceneStore } from "./sceneStore";
 import type { SceneQuality } from "./quality";
@@ -107,11 +109,13 @@ export default function SceneRoot({
       <CareField rows={quality.fieldLines} points={quality.fieldPoints} />
       <CareParticles count={quality.particles} />
 
-      {/* Story objects (home page). */}
+      {/* Story objects — each appears only where its DOM anchor is on screen. */}
       <CareCore quality={quality} journey={journey} />
-      {quality.tier === "high" && <DepartmentLattice />}
+      {quality.tier === "high" && <ClinicLattice />}
+      <DepartmentNetwork />
       <AppointmentPlanes copy={planes} />
       <ContactLine />
+      <SupportFlow />
     </Canvas>
   );
 }

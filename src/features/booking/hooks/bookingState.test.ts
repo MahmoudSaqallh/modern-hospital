@@ -3,7 +3,14 @@ import { getDoctor } from "@/data/doctors";
 import { addDays, weekdayOf } from "@/lib/dates";
 import { getDoctorDay } from "../services/availability";
 import { ANY_DOCTOR } from "../types";
-import { bookingReducer, createInitialState, initialBookingState, maxReachableStep, type BookingState } from "./bookingState";
+import {
+  bookingReducer,
+  createInitialState,
+  initialBookingState,
+  maxReachableStep,
+  prefillFromSearch,
+  type BookingState,
+} from "./bookingState";
 
 const filledPatient = { fullName: "أحمد محمد", phone: "0591234567", age: "30", notes: "" };
 
@@ -11,9 +18,25 @@ function reduce(state: BookingState, ...actions: Parameters<typeof bookingReduce
   return actions.reduce(bookingReducer, state);
 }
 
+describe("booking prefill from links", () => {
+  it("reads ?clinic= and still honours the pre-rename ?department=", () => {
+    expect(prefillFromSearch(new URLSearchParams("clinic=dental")).clinic).toBe("dental");
+    expect(prefillFromSearch(new URLSearchParams("department=pediatrics")).clinic).toBe("pediatrics");
+    expect(prefillFromSearch(new URLSearchParams("clinic=dental&department=pediatrics")).clinic).toBe("dental");
+    expect(createInitialState(prefillFromSearch(new URLSearchParams("department=pediatrics")), null)).toMatchObject({
+      clinicId: "pediatrics",
+      step: 2,
+    });
+  });
+
+  it("ignores unknown clinics", () => {
+    expect(createInitialState(prefillFromSearch(new URLSearchParams("clinic=nope")), null)).toEqual(initialBookingState);
+  });
+});
+
 describe("booking state machine", () => {
   it("advances as each decision is made", () => {
-    let s = reduce(initialBookingState, { type: "selectDepartment", departmentId: "pediatrics" });
+    let s = reduce(initialBookingState, { type: "selectClinic", clinicId: "pediatrics" });
     expect(s.step).toBe(2);
     s = reduce(s, { type: "selectDoctor", choice: "ahmad-mohammad" });
     expect(s.step).toBe(3);
@@ -28,19 +51,19 @@ describe("booking state machine", () => {
   it("clears downstream choices when an upstream choice changes", () => {
     const s = reduce(
       initialBookingState,
-      { type: "selectDepartment", departmentId: "pediatrics" },
+      { type: "selectClinic", clinicId: "pediatrics" },
       { type: "selectDoctor", choice: "ahmad-mohammad" },
       { type: "selectDate", date: "2026-10-10" },
       { type: "selectSlot", time: "09:00", doctorId: "ahmad-mohammad" },
-      { type: "selectDepartment", departmentId: "dental" },
+      { type: "selectClinic", clinicId: "dental" },
     );
-    expect(s).toMatchObject({ departmentId: "dental", doctorChoice: null, date: null, time: null, assignedDoctorId: null, step: 2 });
+    expect(s).toMatchObject({ clinicId: "dental", doctorChoice: null, date: null, time: null, assignedDoctorId: null, step: 2 });
   });
 
   it("requires valid patient details before review", () => {
     let s = reduce(
       initialBookingState,
-      { type: "selectDepartment", departmentId: "pediatrics" },
+      { type: "selectClinic", clinicId: "pediatrics" },
       { type: "selectDoctor", choice: ANY_DOCTOR },
       { type: "selectDate", date: "2026-10-10" },
       { type: "selectSlot", time: "09:00", doctorId: "lina-haddad" },
@@ -59,7 +82,7 @@ describe("booking state machine", () => {
     const ready: BookingState = {
       ...initialBookingState,
       step: 5,
-      departmentId: "pediatrics",
+      clinicId: "pediatrics",
       doctorChoice: "ahmad-mohammad",
       date: "2026-10-10",
       time: "09:00",
@@ -72,9 +95,10 @@ describe("booking state machine", () => {
   });
 
   it("drops invalid URL prefill values", () => {
-    expect(createInitialState({ department: "not-real" }, null).step).toBe(1);
-    expect(createInitialState({ department: "emergency" }, null).step).toBe(1);
-    expect(createInitialState({ department: "pediatrics", doctor: "rana-khalil" }, null)).toMatchObject({ step: 2, doctorChoice: null });
+    expect(createInitialState({ clinic: "not-real" }, null).step).toBe(1);
+    // Emergency is a department, not a bookable clinic.
+    expect(createInitialState({ clinic: "emergency" }, null).step).toBe(1);
+    expect(createInitialState({ clinic: "pediatrics", doctor: "rana-khalil" }, null)).toMatchObject({ step: 2, doctorChoice: null });
   });
 
   it("prefills straight to patient details for a valid, free, future slot", () => {
@@ -87,7 +111,7 @@ describe("booking state machine", () => {
     }
     expect(slot).toBeDefined();
     const s = createInitialState({ doctor: "ahmad-mohammad", date, time: slot!.time }, new Date(2026, 9, 4));
-    expect(s).toMatchObject({ step: 4, departmentId: "pediatrics", date, time: slot!.time, assignedDoctorId: "ahmad-mohammad" });
+    expect(s).toMatchObject({ step: 4, clinicId: "pediatrics", date, time: slot!.time, assignedDoctorId: "ahmad-mohammad" });
     expect(weekdayOf(date)).not.toBe(5);
   });
 });

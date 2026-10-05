@@ -34,7 +34,8 @@ export function ContactLine() {
     if (!mesh || !g || !m) return;
     const delta = Math.min(rawDelta, 0.05);
     const anchor = sceneStore.anchors["contact-strip"];
-    const target = sceneStore.mode === "home" ? anchor.weight : 0;
+    // Anchors only exist on pages that show this visual, so the weight alone decides presence.
+    const target = anchor.weight;
     presence.current = sceneStore.reducedMotion ? target : THREE.MathUtils.damp(presence.current, target, 3, delta);
     mesh.visible = presence.current > 0.02;
     if (!mesh.visible) return;

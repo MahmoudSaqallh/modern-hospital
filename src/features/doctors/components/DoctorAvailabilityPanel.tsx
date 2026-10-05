@@ -25,7 +25,7 @@ export function DoctorAvailabilityPanel({ doctor }: { doctor: Doctor }) {
   const { locale, dict } = useI18n();
   const copy = dict.doctorProfile;
   const now = useClientNow();
-  const { state, retry } = useAvailability(doctor.departmentId, doctor.id, now);
+  const { state, retry } = useAvailability(doctor.clinicId, doctor.id, now);
   const [pickedDate, setPickedDate] = useState<IsoDate | null>(null);
   const [time, setTime] = useState<ClockTime | null>(null);
   const labelId = useId();
@@ -36,7 +36,7 @@ export function DoctorAvailabilityPanel({ doctor }: { doctor: Doctor }) {
   const day = days.find((d) => d.date === date);
 
   const href = bookingHref(locale, {
-    department: doctor.departmentId,
+    clinic: doctor.clinicId,
     doctor: doctor.id,
     ...(date && time ? { date, time } : {}),
   });

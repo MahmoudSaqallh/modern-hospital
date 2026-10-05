@@ -7,9 +7,9 @@ import { anchorToWorld } from "../anchor";
 import { sceneStore } from "../sceneStore";
 
 /**
- * Departments chapter: the care network reorganizes into a structured
- * lattice — one node per specialty. Hovering a department in the list
- * lights its node and the connections around it.
+ * Clinics: the care network reorganizes into a structured lattice — one
+ * node per clinic. Hovering a clinic in a list lights its node and the
+ * connections around it.
  */
 
 const COUNT = 9;
@@ -51,7 +51,7 @@ const edgeFragment = /* glsl */ `
   }
 `;
 
-export function DepartmentLattice() {
+export function ClinicLattice() {
   const group = useRef<THREE.Group>(null);
   const nodes = useRef<Array<THREE.Mesh | null>>([]);
   const halo = useRef<THREE.Mesh>(null);
@@ -84,8 +84,9 @@ export function DepartmentLattice() {
     if (!g) return;
     const delta = Math.min(rawDelta, 0.05);
     const reduced = sceneStore.reducedMotion;
-    const anchor = sceneStore.anchors["dept-visual"];
-    const target = sceneStore.mode === "home" ? anchor.weight : 0;
+    const anchor = sceneStore.anchors["clinic-orbit"];
+    // Anchors only exist on pages that show this visual, so the weight alone decides presence.
+    const target = anchor.weight;
     presence.current = reduced ? target : THREE.MathUtils.damp(presence.current, target, 4, delta);
     const p = presence.current;
     g.visible = p > 0.02;
@@ -100,7 +101,7 @@ export function DepartmentLattice() {
       g.rotation.x = -sceneStore.pointer.y * 0.08;
     }
 
-    const focus = sceneStore.focusDept;
+    const focus = sceneStore.focusClinic;
     if (edgeMaterial.current) {
       edgeMaterial.current.uniforms.uFocus.value = focus;
       edgeMaterial.current.uniforms.uOpacity.value = p;

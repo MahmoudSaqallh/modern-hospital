@@ -72,7 +72,7 @@ export function ContactStrip() {
       <Reveal className="container-site">
         <SectionHeader
           id="contact-strip-title"
-          index="06"
+          index="08"
           eyebrow={copy.eyebrow}
           title={copy.title}
           action={<TextLink href={localePath(locale, "/contact")}>{copy.more}</TextLink>}

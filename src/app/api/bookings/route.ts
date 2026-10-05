@@ -1,9 +1,11 @@
 import { getDoctor } from "@/data/doctors";
 import { isSlotAvailable } from "@/features/booking/services/availability";
-import { createReference, isRateLimited, json, MAX_BODY_BYTES, readSimulation } from "@/features/booking/services/server";
 import type { Appointment } from "@/features/booking/types";
 import { bookingRequestSchema, checkBookingRules } from "@/features/booking/validation/bookingRequest";
 import { toIsoDate } from "@/lib/dates";
+import { createReference, isRateLimited, json, readJsonBody, readSimulation } from "@/lib/server/api";
+
+const MAX_BODY_BYTES = 4_096;
 
 /**
  * Mock booking endpoint. Validates everything server-side and never logs or
@@ -11,27 +13,17 @@ import { toIsoDate } from "@/lib/dates";
  * appointment atomically (to prevent double booking) and notify the clinic.
  */
 export async function POST(request: Request) {
-  if (!request.headers.get("content-type")?.includes("application/json")) {
-    return json({ error: "invalid_request" }, 415);
-  }
-  if (isRateLimited(request)) return json({ error: "rate_limited" }, 429);
+  if (isRateLimited(request, "bookings")) return json({ error: "rate_limited" }, 429);
 
-  const raw = await request.text();
-  if (raw.length > MAX_BODY_BYTES) return json({ error: "invalid_request" }, 413);
-
-  let body: unknown;
-  try {
-    body = JSON.parse(raw);
-  } catch {
-    return json({ error: "invalid_request" }, 400);
-  }
+  const read = await readJsonBody(request, MAX_BODY_BYTES);
+  if (!read.ok) return read.response;
 
   const simulation = readSimulation(request);
   if (simulation === "slow") await new Promise((r) => setTimeout(r, 2500));
   if (simulation === "fail") return json({ error: "server" }, 500);
   if (simulation === "taken") return json({ error: "slot_unavailable" }, 409);
 
-  const parsed = bookingRequestSchema.safeParse(body);
+  const parsed = bookingRequestSchema.safeParse(read.body);
   if (!parsed.success) return json({ error: "invalid_request" }, 400);
 
   const result = checkBookingRules(parsed.data, toIsoDate(new Date()));
@@ -44,9 +36,9 @@ export async function POST(request: Request) {
   }
 
   const appointment: Appointment = {
-    reference: createReference(booking.date),
+    reference: createReference("PAS", booking.date),
     status: "pending",
-    departmentId: booking.departmentId,
+    clinicId: booking.clinicId,
     doctorId: booking.doctorId,
     date: booking.date,
     time: booking.time,

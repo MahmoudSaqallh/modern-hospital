@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { doctors, getDoctor, getDoctorsByDepartment } from "@/data/doctors";
+import { doctors, getDoctor, getDoctorsByClinic } from "@/data/doctors";
 import { addDays, toIsoDate, weekdayOf } from "@/lib/dates";
 import {
   applySameDayCutoff,
@@ -40,7 +40,7 @@ describe("availability engine", () => {
   });
 
   it("pools doctors so a time is free if any doctor is free, and assigns that doctor", () => {
-    const pool = getDoctorsByDepartment("pediatrics");
+    const pool = getDoctorsByClinic("pediatrics");
     const date = nextWeekday("2026-10-01", 0);
     const pooled = getPooledDay(pool, date);
     for (const slot of pooled.slots.filter((s) => s.available)) {

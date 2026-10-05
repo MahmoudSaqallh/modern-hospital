@@ -11,8 +11,14 @@ export type SceneMode =
   /** Booking flow: barely-there field, rendering parks once settled. */
   | "quiet";
 
-/** DOM elements the 3D scene aligns itself to on the home page. */
-export type AnchorKey = "about-logo" | "closing-logo" | "dept-visual" | "booking-stage" | "contact-strip";
+/** DOM elements the 3D scene aligns itself to (home page and inner pages). */
+export type AnchorKey =
+  | "about-logo"
+  | "clinic-orbit"
+  | "care-network"
+  | "booking-stage"
+  | "contact-strip"
+  | "support-network";
 
 export interface SceneAnchor {
   /** Centre in normalized device coordinates (-1…1, y up). */
@@ -73,15 +79,18 @@ export const sceneStore = {
   heroProgress: 0,
   anchors: {
     "about-logo": emptyAnchor(),
-    "closing-logo": emptyAnchor(),
-    "dept-visual": emptyAnchor(),
+    "clinic-orbit": emptyAnchor(),
+    "care-network": emptyAnchor(),
     "booking-stage": emptyAnchor(),
     "contact-strip": emptyAnchor(),
+    "support-network": emptyAnchor(),
   } as Record<AnchorKey, SceneAnchor>,
   /** Highlighted journey node (quick actions hover), -1 for none. */
   focusJourney: -1,
-  /** Highlighted department in the departments list, -1 for none. */
-  focusDept: -1,
+  /** Highlighted clinic in a clinic list (index into the clinics data), -1 for none. */
+  focusClinic: -1,
+  /** Highlighted department in the care network (department id), null for none. */
+  focusNetwork: null as string | null,
   /** Booking preview step as a continuous value (0…3), tweened by GSAP. */
   bookingStep: 0,
   /** Normalized pointer, -1 … 1. */
@@ -112,15 +121,20 @@ export function setFocusJourney(index: number): void {
   requestSceneFrames(30);
 }
 
-/** Highlight a department node (departments list), or -1 to clear. */
-export function setFocusDept(index: number): void {
-  sceneStore.focusDept = index;
+/** Highlight a clinic node (clinic lists), or -1 to clear. */
+export function setFocusClinic(index: number): void {
+  sceneStore.focusClinic = index;
   requestSceneFrames(40);
 }
 
-/** True when any home-page visual is on screen and deserves full frame rate. */
-export function homeVisualsActive(): boolean {
-  if (sceneStore.mode !== "home") return false;
-  if (sceneStore.heroProgress < 1) return true;
+/** Highlight a department in the care network, or null to clear. */
+export function setFocusNetwork(departmentId: string | null): void {
+  sceneStore.focusNetwork = departmentId;
+  requestSceneFrames(40);
+}
+
+/** True when a story object (hero or an anchored visual) is on screen and deserves full frame rate. */
+export function storyVisualsActive(): boolean {
+  if (sceneStore.mode === "home" && sceneStore.heroProgress < 1) return true;
   return Object.values(sceneStore.anchors).some((a) => a.weight > 0.01);
 }

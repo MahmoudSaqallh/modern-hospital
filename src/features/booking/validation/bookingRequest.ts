@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getDepartment } from "@/data/departments";
+import { getClinic } from "@/data/clinics";
 import { getDoctor } from "@/data/doctors";
 import { daysBetween, isClockTime, isIsoDate } from "@/lib/dates";
 import { BOOKING_HORIZON_DAYS } from "../services/availability";
@@ -19,7 +19,7 @@ import {
  */
 export const bookingRequestSchema = z
   .object({
-    departmentId: z.string().min(1).max(40),
+    clinicId: z.string().min(1).max(40),
     doctorId: z.string().min(1).max(60),
     date: z.string().refine(isIsoDate),
     time: z.string().refine(isClockTime),
@@ -44,9 +44,9 @@ export function checkBookingRules(
   input: z.infer<typeof bookingRequestSchema>,
   serverToday: string,
 ): { ok: true; booking: PatientBooking } | { ok: false; issue: BookingRequestIssue } {
-  const department = getDepartment(input.departmentId);
+  const clinic = getClinic(input.clinicId);
   const doctor = getDoctor(input.doctorId);
-  if (!department?.bookable || !doctor || doctor.departmentId !== department.id) {
+  if (!clinic?.bookable || !doctor || doctor.clinicId !== clinic.id) {
     return { ok: false, issue: "invalid_request" };
   }
   if (validateName(input.patient.fullName) || validatePhone(input.patient.phone)) {
@@ -60,7 +60,7 @@ export function checkBookingRules(
   return {
     ok: true,
     booking: {
-      departmentId: department.id,
+      clinicId: clinic.id,
       doctorId: doctor.id,
       date: input.date,
       time: input.time,

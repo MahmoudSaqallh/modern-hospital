@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { getDepartment } from "@/data/departments";
+import { getClinic } from "@/data/clinics";
 import { doctors, getDoctor } from "@/data/doctors";
 import { findNextAvailable } from "@/features/booking/services/availability";
 import { bookingHref } from "@/features/booking/links";
@@ -23,7 +23,7 @@ export function NextSlotWidget({ className }: { className?: string }) {
   const now = useClientNow();
   const next = useMemo(() => (now ? findNextAvailable(doctors, now) : null), [now]);
   const doctor = getDoctor(next?.doctorId);
-  const department = getDepartment(doctor?.departmentId);
+  const department = getClinic(doctor?.clinicId);
 
   return (
     <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-2 border-s-2 border-care-deep bg-paper/85 py-3 ps-4 pe-5", className)}>
@@ -44,7 +44,7 @@ export function NextSlotWidget({ className }: { className?: string }) {
           </span>
           <TextLink
             className="text-[0.875rem] text-care-deep"
-            href={bookingHref(locale, { department: department.id, doctor: doctor.id, date: next.date, time: next.time })}
+            href={bookingHref(locale, { clinic: department.id, doctor: doctor.id, date: next.date, time: next.time })}
           >
             {dict.hero.nextSlot.cta}
           </TextLink>

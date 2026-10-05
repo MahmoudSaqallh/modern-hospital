@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
-import { getDepartment } from "@/data/departments";
+import { getClinic } from "@/data/clinics";
 import { doctors, getDoctor } from "@/data/doctors";
 import { intlLocale, isLocale, localePath, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { DoctorAvailabilityPanel } from "@/features/doctors/components/DoctorAvailabilityPanel";
 import { PageIntro } from "@/components/motion/PageIntro";
 import { Portrait } from "@/components/ui/Portrait";
-import { DepartmentIcon } from "@/components/icons/DepartmentIcon";
+import { MedicalIcon } from "@/components/icons/MedicalIcon";
 
 export const dynamicParams = false;
 
@@ -38,7 +38,7 @@ export default async function DoctorProfilePage({ params }: PageProps<"/[lang]/d
   if (!isLocale(lang) || !doctor) notFound();
   const dict = await getDictionary(lang);
   const copy = dict.doctorProfile;
-  const department = getDepartment(doctor.departmentId);
+  const department = getClinic(doctor.clinicId);
 
   return (
     <div className="relative bg-paper/85 pb-24 pt-[calc(76px+2rem)] lg:pt-[calc(88px+3rem)]">
@@ -64,7 +64,7 @@ export default async function DoctorProfilePage({ params }: PageProps<"/[lang]/d
               <div className="flex flex-col justify-end">
                 {department && (
                   <p data-intro className="text-eyebrow flex items-center gap-2.5">
-                    <DepartmentIcon name={department.icon} size={16} className="text-care-deep" />
+                    <MedicalIcon name={department.icon} size={16} className="text-care-deep" />
                     {department.name[lang]}
                   </p>
                 )}

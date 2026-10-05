@@ -16,7 +16,6 @@ import { makeBadgeTexture, makeLabelTexture, type JourneyIcon } from "../texture
 
 export interface CoreShares {
   about: number;
-  closing: number;
   presence: number;
   narrow: boolean;
 }
@@ -103,9 +102,8 @@ export function JourneyNetwork({
   useFrame((state, rawDelta) => {
     const delta = Math.min(rawDelta, 0.05);
     const reduced = sceneStore.reducedMotion;
-    const { about, closing, narrow } = shares.current;
-    // The network belongs to the hero and About chapters; it steps back for the closing.
-    const networkPresence = 1 - closing;
+    const { about, narrow } = shares.current;
+    const networkPresence = 1;
     const introLines = sceneStore.mode === "home" ? Math.max(sceneStore.introLines, about) : 0;
     const t = sceneStore.time;
 

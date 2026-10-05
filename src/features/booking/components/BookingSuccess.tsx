@@ -6,7 +6,7 @@ import { CalendarPlus } from "lucide-react";
 import { gsap, useGSAP } from "@/animations/gsap";
 import { playSuccess } from "@/animations/booking";
 import { MEDIA } from "@/animations/motion";
-import { getDepartment } from "@/data/departments";
+import { getClinic } from "@/data/clinics";
 import { getDoctor } from "@/data/doctors";
 import { localePath } from "@/i18n/config";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -32,7 +32,7 @@ export function BookingSuccess({
   const root = useRef<HTMLDivElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const doctor = getDoctor(appointment.doctorId);
-  const department = getDepartment(appointment.departmentId);
+  const clinic = getClinic(appointment.clinicId);
 
   useGSAP(
     () => {
@@ -51,13 +51,13 @@ export function BookingSuccess({
 
   const addToCalendar = () => {
     const doctorName = doctor?.name[locale] ?? "";
-    const departmentName = department?.name[locale] ?? "";
+    const clinicName = clinic?.name[locale] ?? "";
     const file = buildCalendarFile({
       uid: appointment.reference,
       date: appointment.date,
       time: appointment.time,
       durationMinutes: 30,
-      title: format(copy.calendarTitle, { department: departmentName }),
+      title: format(copy.calendarTitle, { clinic: clinicName }),
       description: format(copy.calendarDescription, { doctor: doctorName, reference: appointment.reference }),
     });
     downloadCalendarFile(`${appointment.reference}.ics`, file);
@@ -65,7 +65,7 @@ export function BookingSuccess({
 
   const details = [
     { label: dict.booking.review.doctor, value: doctor?.name[locale] },
-    { label: dict.booking.review.department, value: department?.name[locale] },
+    { label: dict.booking.review.clinic, value: clinic?.name[locale] },
     {
       label: dict.booking.review.date,
       value: formatDate(appointment.date, locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" }),

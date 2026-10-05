@@ -1,4 +1,4 @@
-import { getDepartment } from "@/data/departments";
+import { getClinic } from "@/data/clinics";
 import { getDoctor } from "@/data/doctors";
 import { isClockTime, isIsoDate } from "@/lib/dates";
 import { isSlotAvailable } from "../services/availability";
@@ -13,7 +13,7 @@ import {
 } from "../types";
 import { validatePatient } from "../validation/patient";
 
-export const BOOKING_STEPS = ["department", "doctor", "schedule", "details", "review"] as const;
+export const BOOKING_STEPS = ["clinic", "doctor", "schedule", "details", "review"] as const;
 export type BookingStepKey = (typeof BOOKING_STEPS)[number];
 /** 1-based step number, matching the "01 … 05" progress labels. */
 export type BookingStep = 1 | 2 | 3 | 4 | 5;
@@ -27,7 +27,7 @@ export interface BookingState {
   step: BookingStep;
   /** +1 when moving forward, -1 when moving back — drives transition direction. */
   direction: 1 | -1;
-  departmentId: string | null;
+  clinicId: string | null;
   doctorChoice: DoctorChoice | null;
   date: IsoDate | null;
   time: ClockTime | null;
@@ -39,7 +39,7 @@ export interface BookingState {
 }
 
 export type BookingAction =
-  | { type: "selectDepartment"; departmentId: string }
+  | { type: "selectClinic"; clinicId: string }
   | { type: "selectDoctor"; choice: DoctorChoice }
   | { type: "selectDate"; date: IsoDate }
   | { type: "selectSlot"; time: ClockTime; doctorId: string }
@@ -58,7 +58,7 @@ export const emptyPatient: PatientDetails = { fullName: "", phone: "", age: "", 
 export const initialBookingState: BookingState = {
   step: 1,
   direction: 1,
-  departmentId: null,
+  clinicId: null,
   doctorChoice: null,
   date: null,
   time: null,
@@ -70,7 +70,7 @@ export const initialBookingState: BookingState = {
 
 /** Furthest step the patient may open given what is already selected. */
 export function maxReachableStep(state: BookingState): BookingStep {
-  if (!state.departmentId) return 1;
+  if (!state.clinicId) return 1;
   if (!state.doctorChoice) return 2;
   if (!state.date || !state.time || !state.assignedDoctorId) return 3;
   if (Object.keys(validatePatient(state.patient)).length > 0) return 4;
@@ -89,11 +89,11 @@ function moveTo(state: BookingState, target: number): BookingState {
 
 export function bookingReducer(state: BookingState, action: BookingAction): BookingState {
   switch (action.type) {
-    case "selectDepartment": {
-      if (state.departmentId === action.departmentId) return moveTo(state, 2);
+    case "selectClinic": {
+      if (state.clinicId === action.clinicId) return moveTo(state, 2);
       const next: BookingState = {
         ...state,
-        departmentId: action.departmentId,
+        clinicId: action.clinicId,
         doctorChoice: null,
         date: null,
         time: null,
@@ -133,10 +133,21 @@ export function bookingReducer(state: BookingState, action: BookingAction): Book
 }
 
 export interface BookingPrefill {
-  department?: string | null;
+  clinic?: string | null;
   doctor?: string | null;
   date?: string | null;
   time?: string | null;
+}
+
+/** Read booking prefill from a query string. */
+export function prefillFromSearch(search: Pick<URLSearchParams, "get">): BookingPrefill {
+  return {
+    // `department` is still accepted so links created before the clinics rename keep working.
+    clinic: search.get("clinic") ?? search.get("department"),
+    doctor: search.get("doctor"),
+    date: search.get("date"),
+    time: search.get("time"),
+  };
 }
 
 /**
@@ -148,13 +159,13 @@ export function createInitialState(prefill: BookingPrefill, now: Date | null): B
   let state = initialBookingState;
 
   const doctor = getDoctor(prefill.doctor);
-  const departmentId = prefill.department ?? doctor?.departmentId;
-  const department = getDepartment(departmentId);
-  if (!department?.bookable) return state;
-  state = { ...state, departmentId: department.id, step: 2 };
+  const clinicId = prefill.clinic ?? doctor?.clinicId;
+  const clinic = getClinic(clinicId);
+  if (!clinic?.bookable) return state;
+  state = { ...state, clinicId: clinic.id, step: 2 };
 
   const choice: DoctorChoice | null =
-    prefill.doctor === ANY_DOCTOR ? ANY_DOCTOR : doctor?.departmentId === department.id ? doctor.id : null;
+    prefill.doctor === ANY_DOCTOR ? ANY_DOCTOR : doctor?.clinicId === clinic.id ? doctor.id : null;
   if (!choice) return state;
   state = { ...state, doctorChoice: choice, step: 3 };
 

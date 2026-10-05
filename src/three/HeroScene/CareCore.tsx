@@ -45,7 +45,6 @@ const EMBLEM_ARCS = [
 ] as const;
 
 const aboutPoint = new THREE.Vector3();
-const closingPoint = new THREE.Vector3();
 
 export interface JourneyCopy {
   labels: [string, string, string, string, string];
@@ -62,7 +61,7 @@ export function CareCore({ quality, journey }: { quality: SceneQuality; journey:
   const rimLight = useRef<THREE.DirectionalLight>(null);
   const accentLight = useRef<THREE.DirectionalLight>(null);
   const presence = useRef(0);
-  const shares = useRef<CoreShares>({ about: 0, closing: 0, presence: 0, narrow: false });
+  const shares = useRef<CoreShares>({ about: 0, presence: 0, narrow: false });
 
   const arcs = useMemo(() => EMBLEM_ARCS.map((arc) => new ArcCurve(1.62, arc.from, arc.to)), []);
   /** Lights aim at the core itself, so the lighting holds wherever the core sits on screen. */
@@ -80,8 +79,7 @@ export function CareCore({ quality, journey }: { quality: SceneQuality; journey:
     // Where should the core be, and how present?
     const heroW = onHome ? sceneStore.intro * (1 - sceneStore.heroProgress) : 0;
     const aboutW = onHome ? sceneStore.anchors["about-logo"].weight : 0;
-    const closingW = onHome ? sceneStore.anchors["closing-logo"].weight * 0.85 : 0;
-    const total = heroW + aboutW + closingW;
+    const total = heroW + aboutW;
     const target = Math.min(1, total);
     const rate = target > presence.current ? 3.2 : 5;
     presence.current = reduced ? target : THREE.MathUtils.damp(presence.current, target, rate, delta);
@@ -104,28 +102,24 @@ export function CareCore({ quality, journey }: { quality: SceneQuality; journey:
     const sum = Math.max(total, 0.0001);
     const wh = heroW / sum;
     const wa = aboutW / sum;
-    const wc = closingW / sum;
     shares.current.about = wa;
-    shares.current.closing = wc;
 
-    // Depth first, then project the anchors at that depth so the ring stays centred on the
+    // Depth first, then project the anchor at that depth so the ring stays centred on the
     // logo even while it is still arriving from the background.
     const z = -3.2 * (1 - p) - sceneStore.heroProgress * 1.4 * wh;
     const aboutSize = anchorToWorld(sceneStore.anchors["about-logo"], camera, z, aboutPoint);
-    const closingSize = anchorToWorld(sceneStore.anchors["closing-logo"], camera, z, closingPoint);
-    // The ring wraps the logo at ~1.3× (About) / ~1.7× (closing) its size.
+    // The ring wraps the About logo at ~1.3× its size.
     const aboutScale = (aboutSize.width * 1.3) / RING_DIAMETER;
-    const closingScale = (closingSize.width * 1.7) / RING_DIAMETER;
 
-    const x = heroX * wh + aboutPoint.x * wa + closingPoint.x * wc;
-    const y = (heroY + sceneStore.heroProgress * 0.9) * wh + aboutPoint.y * wa + closingPoint.y * wc;
-    const scale = heroScale * wh + aboutScale * wa + closingScale * wc;
+    const x = heroX * wh + aboutPoint.x * wa;
+    const y = (heroY + sceneStore.heroProgress * 0.9) * wh + aboutPoint.y * wa;
+    const scale = heroScale * wh + aboutScale * wa;
 
     if (reduced) {
       g.position.set(x, y, z);
     } else {
       // Stiffer follow while anchored to scrolling DOM, softer for the hero.
-      const follow = THREE.MathUtils.lerp(4, 16, wa + wc);
+      const follow = THREE.MathUtils.lerp(4, 16, wa);
       g.position.x = THREE.MathUtils.damp(g.position.x, x, follow, delta);
       g.position.y = THREE.MathUtils.damp(g.position.y, y, follow, delta);
       g.position.z = THREE.MathUtils.damp(g.position.z, z, 4, delta);
@@ -143,7 +137,7 @@ export function CareCore({ quality, journey }: { quality: SceneQuality; journey:
     }
     if (rimLight.current) rimLight.current.intensity = 2.2 * p;
     if (accentLight.current) {
-      accentLight.current.intensity = 1.1 * p * (1 - wc * 0.6);
+      accentLight.current.intensity = 1.1 * p;
       accentLight.current.position.set(3.6 - px * 1.2, -0.6, -4.2);
     }
 

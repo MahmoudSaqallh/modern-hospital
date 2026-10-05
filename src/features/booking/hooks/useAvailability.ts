@@ -21,16 +21,16 @@ type Settled = { key: string } & ({ status: "error"; code: BookingErrorCode } | 
  * Loading is derived from "no settled result for the current request", so a
  * new selection immediately shows the skeleton and stale data never flashes.
  */
-export function useAvailability(departmentId: string | null, doctorChoice: DoctorChoice | null, now: Date | null) {
+export function useAvailability(clinicId: string | null, doctorChoice: DoctorChoice | null, now: Date | null) {
   const [settled, setSettled] = useState<Settled | null>(null);
   const [attempt, setAttempt] = useState(0);
   const from = now ? toIsoDate(now) : null;
-  const key = departmentId && doctorChoice && from ? `${departmentId}|${doctorChoice}|${from}|${attempt}` : null;
+  const key = clinicId && doctorChoice && from ? `${clinicId}|${doctorChoice}|${from}|${attempt}` : null;
 
   useEffect(() => {
-    if (!key || !departmentId || !doctorChoice || !from) return;
+    if (!key || !clinicId || !doctorChoice || !from) return;
     const controller = new AbortController();
-    fetchAvailability({ departmentId, doctorId: doctorChoice, from, days: SCHEDULE_DAYS }, controller.signal).then(
+    fetchAvailability({ clinicId, doctorId: doctorChoice, from, days: SCHEDULE_DAYS }, controller.signal).then(
       (response) => setSettled({ key, status: "success", days: response.days }),
       (error: unknown) => {
         if (isAbortError(error)) return;
@@ -38,7 +38,7 @@ export function useAvailability(departmentId: string | null, doctorChoice: Docto
       },
     );
     return () => controller.abort();
-  }, [key, departmentId, doctorChoice, from]);
+  }, [key, clinicId, doctorChoice, from]);
 
   const state: AvailabilityState = useMemo(() => {
     if (!key) return { status: "idle" };

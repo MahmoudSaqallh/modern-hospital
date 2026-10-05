@@ -1,6 +1,6 @@
 import type { ClinicSession } from "@/features/doctors/types";
 
-export type { Department } from "@/features/departments/types";
+export type { Clinic } from "@/features/clinics/types";
 export type { Doctor } from "@/features/doctors/types";
 
 /** ISO calendar date, "YYYY-MM-DD", always interpreted in the clinic's local calendar. */
@@ -40,7 +40,7 @@ export interface PatientDetails {
 
 /** Payload sent to the booking API. */
 export interface PatientBooking {
-  departmentId: string;
+  clinicId: string;
   doctorId: string;
   date: IsoDate;
   time: ClockTime;
@@ -58,7 +58,7 @@ export type AppointmentStatus = "pending" | "confirmed";
 export interface Appointment {
   reference: string;
   status: AppointmentStatus;
-  departmentId: string;
+  clinicId: string;
   doctorId: string;
   date: IsoDate;
   time: ClockTime;

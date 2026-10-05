@@ -62,7 +62,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 export interface AvailabilityQuery {
-  departmentId: string;
+  clinicId: string;
   doctorId: DoctorChoice;
   from: IsoDate;
   days: number;
@@ -70,7 +70,7 @@ export interface AvailabilityQuery {
 
 export function fetchAvailability(query: AvailabilityQuery, signal?: AbortSignal): Promise<AvailabilityResponse> {
   const params = new URLSearchParams({
-    departmentId: query.departmentId,
+    clinicId: query.clinicId,
     doctorId: query.doctorId,
     from: query.from,
     days: String(query.days),

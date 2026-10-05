@@ -8,7 +8,7 @@ import type { Doctor } from "@/features/doctors/types";
 export const doctors: Doctor[] = [
   {
     id: "ahmad-mohammad",
-    departmentId: "pediatrics",
+    clinicId: "pediatrics",
     name: { ar: "د. أحمد محمد", en: "Dr. Ahmad Mohammad" },
     title: { ar: "استشاري طب الأطفال", en: "Consultant Pediatrician" },
     qualification: { ar: "بكالوريوس الطب والجراحة، البورد في طب الأطفال", en: "MBBS, Board certification in Pediatrics" },
@@ -26,7 +26,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: "lina-haddad",
-    departmentId: "pediatrics",
+    clinicId: "pediatrics",
     name: { ar: "د. لينا الحداد", en: "Dr. Lina Haddad" },
     title: { ar: "أخصائية طب الأطفال وحديثي الولادة", en: "Pediatrics & Neonatology Specialist" },
     qualification: { ar: "بكالوريوس الطب والجراحة، ماجستير طب الأطفال", en: "MBBS, Master's in Pediatrics" },
@@ -43,7 +43,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: "rana-khalil",
-    departmentId: "maternity",
+    clinicId: "maternity",
     name: { ar: "د. رنا خليل", en: "Dr. Rana Khalil" },
     title: { ar: "استشارية النساء والولادة", en: "Consultant Obstetrician & Gynecologist" },
     qualification: { ar: "بكالوريوس الطب والجراحة، البورد في النساء والولادة", en: "MBBS, Board certification in Obstetrics & Gynecology" },
@@ -61,7 +61,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: "maha-saleh",
-    departmentId: "maternity",
+    clinicId: "maternity",
     name: { ar: "د. مها صالح", en: "Dr. Maha Saleh" },
     title: { ar: "أخصائية النساء والولادة", en: "Obstetrics & Gynecology Specialist" },
     qualification: { ar: "بكالوريوس الطب والجراحة، ماجستير النساء والولادة", en: "MBBS, Master's in Obstetrics & Gynecology" },
@@ -78,7 +78,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: "khaled-yousef",
-    departmentId: "internal",
+    clinicId: "internal",
     name: { ar: "د. خالد يوسف", en: "Dr. Khaled Yousef" },
     title: { ar: "استشاري الأمراض الباطنية", en: "Consultant in Internal Medicine" },
     qualification: { ar: "بكالوريوس الطب والجراحة، البورد في الأمراض الباطنية", en: "MBBS, Board certification in Internal Medicine" },
@@ -96,7 +96,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: "sami-abdullah",
-    departmentId: "internal",
+    clinicId: "internal",
     name: { ar: "د. سامي عبدالله", en: "Dr. Sami Abdullah" },
     title: { ar: "أخصائي الأمراض الباطنية", en: "Internal Medicine Specialist" },
     qualification: { ar: "بكالوريوس الطب والجراحة، ماجستير الأمراض الباطنية", en: "MBBS, Master's in Internal Medicine" },
@@ -113,7 +113,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: "omar-najjar",
-    departmentId: "surgery",
+    clinicId: "surgery",
     name: { ar: "د. عمر النجار", en: "Dr. Omar Najjar" },
     title: { ar: "استشاري الجراحة العامة", en: "Consultant General Surgeon" },
     qualification: { ar: "بكالوريوس الطب والجراحة، البورد في الجراحة العامة", en: "MBBS, Board certification in General Surgery" },
@@ -130,7 +130,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: "hani-mansour",
-    departmentId: "cardiology",
+    clinicId: "cardiology",
     name: { ar: "د. هاني منصور", en: "Dr. Hani Mansour" },
     title: { ar: "استشاري أمراض القلب", en: "Consultant Cardiologist" },
     qualification: { ar: "بكالوريوس الطب والجراحة، البورد في أمراض القلب", en: "MBBS, Board certification in Cardiology" },
@@ -148,7 +148,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: "yazan-qasem",
-    departmentId: "orthopedics",
+    clinicId: "orthopedics",
     name: { ar: "د. يزن قاسم", en: "Dr. Yazan Qasem" },
     title: { ar: "أخصائي جراحة العظام", en: "Orthopedic Surgery Specialist" },
     qualification: { ar: "بكالوريوس الطب والجراحة، ماجستير جراحة العظام", en: "MBBS, Master's in Orthopedic Surgery" },
@@ -165,41 +165,41 @@ export const doctors: Doctor[] = [
   },
   {
     id: "nour-ibrahim",
-    departmentId: "radiology",
+    clinicId: "dermatology",
     name: { ar: "د. نور إبراهيم", en: "Dr. Nour Ibrahim" },
-    title: { ar: "أخصائية الأشعة التشخيصية", en: "Diagnostic Radiology Specialist" },
-    qualification: { ar: "بكالوريوس الطب والجراحة، ماجستير الأشعة التشخيصية", en: "MBBS, Master's in Diagnostic Radiology" },
+    title: { ar: "أخصائية الأمراض الجلدية", en: "Dermatology Specialist" },
+    qualification: { ar: "بكالوريوس الطب والجراحة، ماجستير الأمراض الجلدية", en: "MBBS, Master's in Dermatology" },
     bio: {
-      ar: "تشرف على مواعيد التصوير الطبي وتتابع إعداد التقارير للطبيب المعالج.",
-      en: "Oversees imaging appointments and the preparation of reports for the treating physician.",
+      ar: "تهتم بتشخيص الأمراض الجلدية الشائعة ومتابعتها، وتشرح للمريض خطة العلاج بوضوح.",
+      en: "Diagnoses and follows up common skin conditions, explaining each treatment plan clearly.",
     },
     services: [
-      { ar: "التصوير الطبي بطلب الطبيب", en: "Imaging on physician request" },
-      { ar: "إعداد التقارير التشخيصية", en: "Diagnostic reports" },
+      { ar: "تشخيص الأمراض الجلدية", en: "Skin condition diagnosis" },
+      { ar: "متابعة الحالات المزمنة", en: "Chronic condition follow-up" },
     ],
-    workingDays: [6, 0, 1, 2, 3, 4],
-    sessions: ["morning"],
+    workingDays: [6, 1, 3],
+    sessions: ["evening"],
   },
   {
     id: "dana-awad",
-    departmentId: "laboratory",
+    clinicId: "ent",
     name: { ar: "د. دانة عوض", en: "Dr. Dana Awad" },
-    title: { ar: "أخصائية علم الأمراض المخبرية", en: "Clinical Pathology Specialist" },
-    qualification: { ar: "بكالوريوس الطب والجراحة، ماجستير علم الأمراض", en: "MBBS, Master's in Clinical Pathology" },
+    title: { ar: "أخصائية الأنف والأذن والحنجرة", en: "Ear, Nose & Throat Specialist" },
+    qualification: { ar: "بكالوريوس الطب والجراحة، ماجستير الأنف والأذن والحنجرة", en: "MBBS, Master's in Otolaryngology" },
     bio: {
-      ar: "تتابع جودة التحاليل المخبرية وتنظيم مواعيد سحب العينات.",
-      en: "Oversees laboratory test quality and the scheduling of sample collection.",
+      ar: "تعالج مشكلات الأنف والأذن والحنجرة للكبار والصغار، وتتابع الحالات المتكررة.",
+      en: "Treats ear, nose and throat conditions for adults and children, with follow-up for recurring cases.",
     },
     services: [
-      { ar: "التحاليل الدورية", en: "Routine tests" },
-      { ar: "تنظيم مواعيد سحب العينات", en: "Sample collection appointments" },
+      { ar: "فحص السمع والأذن", en: "Ear and hearing examination" },
+      { ar: "علاج التهابات الجيوب الأنفية", en: "Sinus infection treatment" },
     ],
-    workingDays: [6, 0, 1, 2, 3, 4],
+    workingDays: [0, 2, 4],
     sessions: ["morning"],
   },
   {
     id: "faris-zaid",
-    departmentId: "dental",
+    clinicId: "dental",
     name: { ar: "د. فارس زيد", en: "Dr. Faris Zaid" },
     title: { ar: "طبيب أسنان عام", en: "General Dentist" },
     qualification: { ar: "بكالوريوس طب وجراحة الفم والأسنان", en: "Bachelor of Dental Surgery" },
@@ -217,7 +217,7 @@ export const doctors: Doctor[] = [
   },
   {
     id: "salma-hasan",
-    departmentId: "dental",
+    clinicId: "dental",
     name: { ar: "د. سلمى حسن", en: "Dr. Salma Hasan" },
     title: { ar: "أخصائية طب أسنان الأطفال", en: "Pediatric Dentistry Specialist" },
     qualification: { ar: "بكالوريوس طب الأسنان، ماجستير طب أسنان الأطفال", en: "BDS, Master's in Pediatric Dentistry" },
@@ -238,6 +238,6 @@ export function getDoctor(id: string | null | undefined): Doctor | undefined {
   return id ? doctors.find((d) => d.id === id) : undefined;
 }
 
-export function getDoctorsByDepartment(departmentId: string): Doctor[] {
-  return doctors.filter((d) => d.departmentId === departmentId);
+export function getDoctorsByClinic(clinicId: string): Doctor[] {
+  return doctors.filter((d) => d.clinicId === clinicId);
 }
